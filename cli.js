@@ -25,8 +25,13 @@ tell application "QuickTime Player"
       close document 1
     end if`
   )}
-  activate
   open URL "${streamUrl}"
+  return "QuickTime Player"
+end tell`);
+
+const hideApplication = app => run(`
+tell application "Finder"
+  set visible of process "${app}" to false
 end tell`);
 
 program().catch(err => { throw err; });
@@ -34,7 +39,8 @@ program().catch(err => { throw err; });
 async function program() {
   const stations = await fetchStations();
   const station = await selectStation(stations);
-  return playStream(station.url);
+  const player = await playStream(station.url);
+  hideApplication(player);
 }
 
 async function selectStation(stations) {
