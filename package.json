@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "description": "Play radiocloud radio stations from your terminal",
   "bin": {
-    "rcloud": "cli.js"
+    "rcloud": "cli.js",
+    "radiocloud": "cli.js"
   },
   "scripts": {
     "lint": "eslint ."
@@ -11,7 +12,13 @@
   "config": {
     "stationsUrl": "https://raw.githubusercontent.com/vladimyr/radiocloud/master/stations.json"
   },
-  "keywords": [],
+  "keywords": [
+    "radio",
+    "stream",
+    "shoutcast",
+    "icecast",
+    "quicktime"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/vladimyr/radiocloud-cli.git"
