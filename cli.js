@@ -10,6 +10,7 @@ const pkg = require('./package.json');
 const run = require('run-applescript');
 inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
 
+const delay = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
 const fetchStations = async (url = pkg.config.stationsUrl) => {
   const { body: stations } = await got(url, { json: true });
   return stations;
@@ -40,6 +41,7 @@ async function program() {
   const stations = await fetchStations();
   const station = await selectStation(stations);
   const player = await playStream(station.url);
+  await delay(1000);
   hideApplication(player);
 }
 
