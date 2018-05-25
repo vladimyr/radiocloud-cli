@@ -19,12 +19,13 @@ const normalize = str => removeDiacritics(str.toLowerCase().trim());
 
 const playStream = (streamUrl, singleInstance = true) => run(`
 tell application "QuickTime Player"
-  ${singleInstance && `
+  ${(
+    singleInstance && `
     if it is running and (exists document 1) then
       close document 1
-    end if
-    activate
-  `}
+    end if`
+  )}
+  activate
   open URL "${streamUrl}"
 end tell`);
 
