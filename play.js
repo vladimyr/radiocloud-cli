@@ -1,15 +1,15 @@
 'use strict';
 
 const cp = require('child_process');
-const platform = require('os').platform();
 const opn = require('opn');
+const platform = require('os').platform();
 const run = require('run-applescript');
 const tempWrite = require('temp-write');
 
 const delay = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
-const spawn = (cmd, args) => cp.spawn(cmd, args, { stdio: 'ignore', detached: true });
 const isLinux = platform => platform === 'linux';
 const isMacOS = platform => platform === 'darwin';
+const spawn = (cmd, args) => cp.spawn(cmd, args, { stdio: 'ignore', detached: true });
 
 const tempPlaylist = (stream, filename = 'radiocloud.pls') => tempWrite.sync(`
 [playlist]
@@ -39,21 +39,23 @@ tell application "Finder"
   set visible of process "${app}" to false
 end tell`);
 
-module.exports = async stream => {
+module.exports = function (stream) {
   if (isMacOS(platform)) {
-    const player = await playStream(stream.url);
-    await delay(1000);
-    return hideApplication(player);
+    return playStream(stream.url)
+      .then(async player => {
+        await delay(1000);
+        hideApplication(player);
+      });
   }
   const playlist = tempPlaylist(stream);
   if (isLinux(platform)) {
     return playPlaylist('vlc', playlist)
       .catch(err => {
         if (err.code !== 'ENOENT') throw err;
-        opn(playlist, { wait: false });
+        return opn(playlist, { wait: false });
       });
   }
-  opn(playlist, { wait: false });
+  return opn(playlist, { wait: false });
 };
 
 function playPlaylist(app, playlist) {
