@@ -2,5 +2,12 @@
 
 >Play [radiocloud](https://radiocloud.surge.sh) radio stations from your terminal
 
-:construction:
+:warning: This application is still in heavy development :construction:
 
+## Usage
+
+Install Node.js, then:
+
+```
+$ npx [-q] vladimyr/radiocloud-cli
+```
