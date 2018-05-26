@@ -1,15 +1,17 @@
 'use strict';
 
-const cp = require('child_process');
+const fs = require('fs');
 const opn = require('opn');
 const platform = require('os').platform();
 const run = require('run-applescript');
 const tempWrite = require('temp-write');
+const util = require('util');
+const which = require('which').sync;
 
+const del = util.promisify(fs.unlink);
 const delay = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
-const isLinux = platform => platform === 'linux';
+const hasVLC = () => which('vlc', { nothrow: true });
 const isMacOS = platform => platform === 'darwin';
-const spawn = (cmd, args) => cp.spawn(cmd, args, { stdio: 'ignore', detached: true });
 
 const tempPlaylist = (stream, filename = 'radiocloud.pls') => tempWrite.sync(`
 [playlist]
@@ -22,8 +24,8 @@ Length1=-1
 Version=2
 `, filename);
 
-const playStream = (streamUrl, singleInstance = true) => run(`
-tell application "QuickTime Player"
+const playStream = (player, streamUrl, singleInstance = true) => run(`
+tell application "${player}"
   ${(
     singleInstance && `
     if it is running and (exists document 1) then
@@ -31,7 +33,7 @@ tell application "QuickTime Player"
     end if`
   )}
   open URL "${streamUrl}"
-  return "QuickTime Player"
+  return "${player}"
 end tell`);
 
 const hideApplication = app => run(`
@@ -41,27 +43,21 @@ end tell`);
 
 module.exports = function (stream) {
   if (isMacOS(platform)) {
-    return playStream(stream.url)
-      .then(async player => {
-        await delay(1000);
-        hideApplication(player);
-      });
+    const player = 'QuickTime Player';
+    return playStream(player, stream.url)
+      .then(() => delay(1000))
+      .then(() => hideApplication(player));
   }
+  if (hasVLC()) return playWithVLC(stream);
   const playlist = tempPlaylist(stream);
-  if (isLinux(platform)) {
-    return playPlaylist('vlc', playlist)
-      .catch(err => {
-        if (err.code !== 'ENOENT') throw err;
-        return opn(playlist, { wait: false });
-      });
-  }
-  return opn(playlist, { wait: false });
+  opn(playlist, { wait: false });
+  return delay(1000).then(() => del(playlist));
 };
 
-function playPlaylist(app, playlist) {
-  return new Promise((resolve, reject) => {
-    const ps = spawn(app, [playlist]);
-    ps.once('error', reject);
-    ps.unref();
+function playWithVLC(stream) {
+  const flags = ['--one-instance', '--no-playlist-enqueue'];
+  return opn(stream.url, {
+    app: ['vlc', ...flags],
+    wait: false
   });
 }
