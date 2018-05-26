@@ -6,11 +6,11 @@ const platform = require('os').platform();
 const run = require('run-applescript');
 const tempWrite = require('temp-write');
 const util = require('util');
-const which = require('which').sync;
+const which = require('which');
 
 const del = util.promisify(fs.unlink);
 const delay = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
-const hasVLC = () => which('vlc', { nothrow: true });
+const hasVLC = () => which.sync('vlc', { nothrow: true });
 const isMacOS = platform => platform === 'darwin';
 
 const tempPlaylist = (stream, filename = 'radiocloud.pls') => tempWrite.sync(`
