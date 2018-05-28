@@ -13,6 +13,12 @@ const delay = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
 const hasVLC = () => which.sync('vlc', { nothrow: true });
 const isMacOS = platform => platform === 'darwin';
 
+// NOTE: This "hack" is required for QuickTime Player
+//       to show stream name as part of window title
+const prettyUrl = ({ url, name }) => {
+  return url.replace(/;?$/, encodeURIComponent(` # ${name}`));
+};
+
 const tempPlaylist = (stream, filename = 'radiocloud.pls') => tempWrite.sync(`
 [playlist]
 NumberOfEntries=1
@@ -44,7 +50,7 @@ end tell`);
 module.exports = function (stream) {
   if (isMacOS(platform)) {
     const player = 'QuickTime Player';
-    return playStream(player, stream.url)
+    return playStream(player, prettyUrl(stream))
       .then(() => delay(1000))
       .then(() => hideApplication(player));
   }
