@@ -39,6 +39,7 @@ tell application "${player}"
     end if`
   )}
   open URL "${streamUrl}"
+  delay 1
   set stream to first document
   set audio volume of stream to ${volume}
   return "${player}"
