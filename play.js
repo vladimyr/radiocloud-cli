@@ -30,7 +30,7 @@ Length1=-1
 Version=2
 `, filename);
 
-const playStream = (player, streamUrl, singleInstance = true) => run(`
+const playStream = (player, streamUrl, volume = 0.2, singleInstance = true) => run(`
 tell application "${player}"
   ${(
     singleInstance && `
@@ -39,6 +39,8 @@ tell application "${player}"
     end if`
   )}
   open URL "${streamUrl}"
+  set stream to first document
+  set audio volume of stream to ${volume}
   return "${player}"
 end tell`);
 
