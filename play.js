@@ -15,16 +15,16 @@ const isMacOS = platform => platform === 'darwin';
 
 // NOTE: This "hack" is required for QuickTime Player
 //       to show stream name as part of window title
-const prettyUrl = ({ url, name }) => {
-  return url.replace(/;?$/, encodeURIComponent(` # ${name}`));
+const prettyUrl = ({ location, title }) => {
+  return location.replace(/;?$/, encodeURIComponent(` # ${title}`));
 };
 
 const tempPlaylist = (stream, filename = 'radiocloud.pls') => tempWrite.sync(`
 [playlist]
 NumberOfEntries=1
 
-File1=${stream.url}
-Title1=${stream.name}
+File1=${stream.location}
+Title1=${stream.title}
 Length1=-1
 
 Version=2
@@ -65,7 +65,7 @@ module.exports = function (stream) {
 
 function playWithVLC(stream) {
   const flags = ['--one-instance', '--no-playlist-enqueue'];
-  return opn(stream.url, {
+  return opn(stream.location, {
     app: ['vlc', ...flags],
     wait: false
   });

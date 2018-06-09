@@ -10,7 +10,7 @@
     "lint": "eslint ."
   },
   "config": {
-    "stationsUrl": "https://raw.githubusercontent.com/vladimyr/radiocloud/master/stations.json"
+    "playlist": "https://radiocloud.surge.sh/radiocloud.jspf"
   },
   "keywords": [
     "radio",

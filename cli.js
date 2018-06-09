@@ -10,9 +10,10 @@ const pkg = require('./package.json');
 const play = require('./play');
 inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
 
-const fetchStations = async (url = pkg.config.stationsUrl) => {
-  const { body: stations } = await got(url, { json: true });
-  return stations;
+const fetchStations = async (url = pkg.config.playlist) => {
+  const resp = await got(url, { json: true });
+  const { playlist = {} } = resp.body;
+  return playlist.track || [];
 };
 const removeDiacritics = str => diacritics.remove(str.replace(/đ/g, 'dj'));
 const normalize = str => removeDiacritics(str.toLowerCase().trim());
@@ -28,7 +29,8 @@ async function program() {
 async function selectStation(stations) {
   stations = stations.map(station => {
     station.value = station;
-    station.normalizedName = normalize(station.name);
+    station.name = station.title;
+    station.normalizedName = normalize(station.title);
     return station;
   });
   const { station } = await inquirer.prompt([{
