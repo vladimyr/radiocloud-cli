@@ -7,6 +7,7 @@ const run = require('run-applescript');
 const tempWrite = require('temp-write');
 const util = require('util');
 const which = require('which');
+const icy = require('./icy');
 
 const del = util.promisify(fs.unlink);
 const delay = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
@@ -51,12 +52,15 @@ tell application "Finder"
 end tell`);
 
 module.exports = function (stream) {
+  const debug = require('debug')('playback');
   if (isMacOS(platform)) {
     const player = 'QuickTime Player';
-    return playStream(player, prettyUrl(stream))
+    return getStreamUrl(stream)
+      .then(url => debug({ url }) || playStream(player, url))
       .then(() => delay(1000))
       .then(() => hideApplication(player));
   }
+  debug({ url: stream.location });
   if (hasVLC()) return playWithVLC(stream);
   const playlist = tempPlaylist(stream);
   opn(playlist, { wait: false });
@@ -69,4 +73,18 @@ function playWithVLC(stream) {
     app: ['vlc', ...flags],
     wait: false
   });
+}
+
+function getStreamUrl(stream) {
+  const debug = require('debug')('icy');
+  const isError = resp => resp.statusCode >= 400 && resp.statusCode <= 500;
+  return icy(prettyUrl(stream))
+    .then(resp => {
+      debug(resp);
+      if (!isError(resp)) return resp.url;
+      const err = new Error(resp.statusMessage);
+      err.response = resp;
+      return Promise.reject(err);
+    })
+    .catch(() => stream.location);
 }
