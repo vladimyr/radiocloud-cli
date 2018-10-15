@@ -23,7 +23,7 @@ program().catch(err => { throw err; });
 async function program() {
   const stations = await fetchStations();
   const station = await selectStation(stations);
-  play(station);
+  return play(station);
 }
 
 async function selectStation(stations) {

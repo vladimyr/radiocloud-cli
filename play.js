@@ -1,9 +1,10 @@
 'use strict';
 
+const { run, ERR_APP_NOT_RUNNING } = require('./script');
 const fs = require('fs');
 const opn = require('opn');
 const platform = require('os').platform();
-const run = require('run-applescript');
+const red = require('ansi-red');
 const tempWrite = require('temp-write');
 const util = require('util');
 const which = require('which');
@@ -58,7 +59,13 @@ module.exports = function (stream) {
     return getStreamUrl(stream)
       .then(url => debug({ url }) || playStream(player, url))
       .then(() => delay(1000))
-      .then(() => hideApplication(player));
+      .then(() => hideApplication(player))
+      .catch(err => {
+        if (err.code !== ERR_APP_NOT_RUNNING) return Promise.reject(err);
+        const message = `Failed to open stream. Please close ${player} manually.`;
+        console.log();
+        console.error(red('Error:'), message);
+      });
   }
   debug({ url: stream.location });
   if (hasVLC()) return playWithVLC(stream);
