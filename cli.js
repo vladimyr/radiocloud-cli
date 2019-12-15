@@ -2,17 +2,17 @@
 
 'use strict';
 
+const client = require('ky-universal');
 const diacritics = require('diacritics');
 const fuzzysearch = require('fuzzysearch');
-const got = require('got');
 const inquirer = require('inquirer');
 const pkg = require('./package.json');
 const play = require('./play');
 inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
 
 const fetchStations = async (url = pkg.config.playlist) => {
-  const resp = await got(url, { json: true });
-  const { playlist = {} } = resp.body;
+  const resp = await client.get(url);
+  const { playlist = {} } = await resp.json();
   return playlist.track || [];
 };
 const removeDiacritics = str => diacritics.remove(str.replace(/đ/g, 'dj'));

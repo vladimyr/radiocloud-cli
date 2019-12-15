@@ -1,4 +1,4 @@
-'use script';
+'use strict';
 
 const runScript = require('run-applescript');
 

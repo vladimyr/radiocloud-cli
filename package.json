@@ -2,9 +2,36 @@
   "name": "radiocloud-cli",
   "version": "0.0.0",
   "description": "Play radiocloud radio stations from your terminal",
+  "keywords": [
+    "icecast",
+    "quicktime",
+    "radio",
+    "shoutcast",
+    "stream"
+  ],
+  "homepage": "https://github.com/vladimyr/radiocloud-cli",
+  "bugs": {
+    "url": "https://github.com/vladimyr/radiocloud-cli/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vladimyr/radiocloud-cli.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Dario Vladovic",
+    "email": "d.vladimyr+dev@gmail.com",
+    "url": "https://github.com/vladimyr"
+  },
+  "files": [
+    "cli.js",
+    "play.js",
+    "script.js",
+    "icy.js"
+  ],
   "bin": {
-    "rcloud": "cli.js",
-    "radiocloud": "cli.js"
+    "radiocloud": "cli.js",
+    "rcloud": "cli.js"
   },
   "scripts": {
     "lint": "eslint ."
@@ -12,48 +39,29 @@
   "config": {
     "playlist": "https://radiocloud.surge.sh/radiocloud.jspf"
   },
-  "keywords": [
-    "radio",
-    "stream",
-    "shoutcast",
-    "icecast",
-    "quicktime"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/vladimyr/radiocloud-cli.git"
-  },
-  "author": {
-    "email": "d.vladimyr@gmail.com",
-    "name": "Dario Vladovic",
-    "url": "github.com/vladimyr"
-  },
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/vladimyr/radiocloud-cli/issues"
-  },
-  "homepage": "https://github.com/vladimyr/radiocloud-cli",
   "dependencies": {
     "ansi-red": "^0.1.1",
-    "debug": "^3.1.0",
+    "debug": "^4.1.1",
     "diacritics": "^1.3.0",
     "fuzzysearch": "^1.0.3",
-    "got": "^9.0.0",
     "http-headers": "^3.0.2",
-    "inquirer": "^6.1.0",
+    "inquirer": "^7.0.1",
     "inquirer-autocomplete-prompt": "^1.0.1",
-    "opn": "^5.3.0",
-    "run-applescript": "^3.2.0",
-    "temp-write": "^3.4.0",
-    "which": "^1.3.1"
+    "ky": "^0.16.1",
+    "ky-universal": "^0.3.0",
+    "opn": "^6.0.0",
+    "run-applescript": "^4.0.0",
+    "temp-write": "^4.0.0",
+    "which": "^2.0.2"
   },
   "devDependencies": {
-    "eslint": "^5.3.0",
-    "eslint-config-semistandard": "^12.0.1",
-    "eslint-config-standard": "^11.0.0",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-node": "^7.0.1",
-    "eslint-plugin-promise": "^3.7.0",
-    "eslint-plugin-standard": "^3.1.0"
+    "@vladimyr/eslint-config": "^1.1.2",
+    "eslint": "^6.7.2",
+    "eslint-config-semistandard": "^15.0.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.19.1",
+    "eslint-plugin-node": "^10.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
   }
 }
