@@ -3,7 +3,7 @@
 const { run, ERR_APP_NOT_RUNNING } = require('./script');
 const fs = require('fs');
 const opn = require('opn');
-const platform = require('os').platform();
+const os = require('os');
 const red = require('ansi-red');
 const tempWrite = require('temp-write');
 const util = require('util');
@@ -12,8 +12,9 @@ const icy = require('./icy');
 
 const del = util.promisify(fs.unlink);
 const delay = ms => new Promise(resolve => setTimeout(() => resolve(), ms));
+const hasVOX = () => fs.existsSync('/Applications/VOX.app');
 const hasVLC = () => which.sync('vlc', { nothrow: true });
-const isMacOS = platform => platform === 'darwin';
+const isMacOS = () => os.platform() === 'darwin';
 
 // NOTE: This "hack" is required for QuickTime Player
 //       to show stream name as part of window title
@@ -54,7 +55,11 @@ end tell`);
 
 module.exports = function (stream) {
   const debug = require('debug')('playback');
-  if (isMacOS(platform)) {
+  if (isMacOS() && hasVOX()) {
+    debug({ url: stream.location });
+    return playWithVOX(stream.location);
+  }
+  if (isMacOS()) {
     const player = 'QuickTime Player';
     return getStreamUrl(stream)
       .then(url => debug({ url }) || playStream(player, url))
@@ -73,6 +78,16 @@ module.exports = function (stream) {
   opn(playlist, { wait: false });
   return delay(1000).then(() => del(playlist));
 };
+
+function playWithVOX(streamUrl, volume = 25) {
+  const player = 'VOX';
+  return run(`
+    tell application "${player}"
+      playURL "${streamUrl}"
+      set player volume to ${volume}
+    end tell
+  `).then(() => hideApplication(player));
+}
 
 function playWithVLC(stream) {
   const flags = ['--one-instance', '--no-playlist-enqueue'];
